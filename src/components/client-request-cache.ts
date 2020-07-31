@@ -17,26 +17,23 @@ limitations under the License.
 /**
  * Caches requests in memory and handles expiring them.
  */
-class ClientRequestCache {
+export class ClientRequestCache<T> {
+    private requestContent: Map<string, {ts: number, content: T}> = new Map();
     /**
      * @param ttl {Number} How old a result can be before it gets expired.
      * @param size {Number} How many results to store before we trim.
      * @param requestFunc The function to use on cache miss.
      */
-    constructor (ttl, size, requestFunc) {
+    constructor (private ttl: number, private maxSize: number, private requestFunc: (...args: any[]) => Promise<T>) {
         if (!Number.isInteger(ttl) || ttl <= 0) {
             throw Error("'ttl' must be greater than 0");
         }
-        if (!Number.isInteger(size) || ttl <= 0) {
+        if (!Number.isInteger(maxSize) || maxSize <= 0) {
             throw Error("'size' must be greater than 0");
         }
         if (typeof(requestFunc) !== "function") {
             throw Error("'requestFunc' must be a function");
         }
-        this._requestContent = new Map(); // key => {ts, content}
-        this.requestFunc = requestFunc;
-        this.ttl = ttl;
-        this.maxSize = size;
     }
 
     /**
@@ -48,30 +45,30 @@ class ClientRequestCache {
      * @returns {Promise} The request, or undefined if not retrievable.
      * @throws {Error} If the key is not a string.
      */
-    get(key, ...args) {
+    get(key: string, ...args: any[]) {
         if (typeof(key) !== "string") {
             throw Error("'key' must be a string");
         }
-        const cachedResult = this._requestContent.get(key);
+        const cachedResult = this.requestContent.get(key);
         if (cachedResult !== undefined && cachedResult.ts >= Date.now() - this.ttl) {
             return cachedResult.content;
         }
         // Delete the old req.
-        this._requestContent.delete(key);
-        return new Promise((resolve, reject) => {
+        this.requestContent.delete(key);
+        return new Promise<T>((resolve) => {
             resolve(this.requestFunc.apply(null, [key].concat(args)))
-        }).then((result) => {
-            if (result !== undefined) {
-                this._requestContent.set(key, {
+        }).then((content) => {
+            if (content !== undefined) {
+                this.requestContent.set(key, {
                     ts: Date.now(),
-                    content: result,
+                    content,
                 });
-                if (this._requestContent.size > this.maxSize) {
-                    const oldKey = this._requestContent.keys().next().value;
-                    this._requestContent.delete(oldKey);
+                if (this.requestContent.size > this.maxSize) {
+                    const oldKey = this.requestContent.keys().next().value;
+                    this.requestContent.delete(oldKey);
                 }
             }
-            return result;
+            return content;
         });
         // Not catching here because we want to pass
         // through any failures.
@@ -82,7 +79,7 @@ class ClientRequestCache {
      * @returns {Map<string,any>}
      */
     getCachedResults() {
-        return new Map(this._requestContent);
+        return new Map(this.requestContent);
     }
 
     /**
@@ -91,5 +88,3 @@ class ClientRequestCache {
      * @param {string} key The key for the cached item.
      */
 }
-
-module.exports = ClientRequestCache;
