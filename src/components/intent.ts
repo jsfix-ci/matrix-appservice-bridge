@@ -233,7 +233,7 @@ export class Intent {
      * @return {Promise}
      */
     public setRoomAvatar(roomId: string, avatar: string, info: object) {
-        var content: { url: string, info?: object} = {
+        const content: { url: string, info?: object} = {
             url: avatar,
         }
         if (info) {
@@ -251,7 +251,7 @@ export class Intent {
      * @return {Promise}
      */
     public sendTyping(roomId: string, isTyping: boolean) {
-        var self = this;
+        const self = this;
         return self._ensureJoined(roomId).then(function() {
             return self._ensureHasPowerLevelFor(roomId, "m.typing");
         }).then(function() {
@@ -268,8 +268,8 @@ export class Intent {
      * @return {Promise}
      */
     public sendReadReceipt(roomId: string, eventId: string) {
-        var self = this;
-        var event = new MatrixEvent({
+        const self = this;
+        const event = new MatrixEvent({
             room_id: roomId,
             event_id: eventId,
         });
@@ -286,7 +286,7 @@ export class Intent {
      * @return {Promise}
      */
     public setPowerLevel(roomId: string, target: string, level: number) {
-        var self = this;
+        const self = this;
         return self._ensureJoined(roomId).then(function() {
             return self._ensureHasPowerLevelFor(roomId, "m.room.power_levels");
         }).then(function(event) {
@@ -318,7 +318,7 @@ export class Intent {
      * @return {Promise}
      */
     public sendEvent(roomId: string, type: string, content: object) {
-        var self = this;
+        const self = this;
         return self._ensureJoined(roomId).then(function() {
             return self._ensureHasPowerLevelFor(roomId, type);
         }).then(self._joinGuard(roomId, function() {
@@ -338,7 +338,7 @@ export class Intent {
      * @return {Promise}
      */
     public sendStateEvent(roomId: string, type: string, skey: string, content: object) {
-        var self = this;
+        const self = this;
         return self._ensureJoined(roomId).then(function() {
             return self._ensureHasPowerLevelFor(roomId, type);
         }).then(self._joinGuard(roomId, function() {
@@ -374,9 +374,9 @@ export class Intent {
      * @return {Promise}
      */
     public createRoom(opts: {createAsClient: boolean, options: {invite?: string[]}}) {
-        var self = this;
-        var cli = opts.createAsClient ? this.client : this.botClient;
-        var options = opts.options || {};
+        const self = this;
+        const cli = opts.createAsClient ? this.client : this.botClient;
+        const options = opts.options || {};
         if (!opts.createAsClient) {
             // invite the client if they aren't already
             options.invite = options.invite || [];
@@ -418,7 +418,7 @@ export class Intent {
      * @return {Promise} Resolved when invited, else rejected with an error.
      */
     public invite(roomId: string, target: string) {
-        var self = this;
+        const self = this;
         return this._ensureJoined(roomId).then(function() {
             return self.client.invite(roomId, target);
         });
@@ -434,7 +434,7 @@ export class Intent {
      * @return {Promise} Resolved when kickked, else rejected with an error.
      */
     public kick(roomId: string, target: string, reason?: string) {
-        var self = this;
+        const self = this;
         return this._ensureJoined(roomId).then(function() {
             return self.client.kick(roomId, target, reason);
         });
@@ -450,7 +450,7 @@ export class Intent {
      * @return {Promise} Resolved when banned, else rejected with an error.
      */
     public ban(roomId: string, target: string, reason?: string) {
-        var self = this;
+        const self = this;
         return this._ensureJoined(roomId).then(function() {
             return self.client.ban(roomId, target, reason);
         });
@@ -465,7 +465,7 @@ export class Intent {
      * @return {Promise} Resolved when unbanned, else rejected with an error.
      */
     public unban(roomId: string, target: string) {
-        var self = this;
+        const self = this;
         return this._ensureJoined(roomId).then(function() {
             return self.client.unban(roomId, target);
         });
@@ -519,7 +519,7 @@ export class Intent {
      * @return {Promise}
      */
     public setDisplayName(name: string) {
-        var self = this;
+        const self = this;
         return self._ensureRegistered().then(function() {
             return self.client.setDisplayName(name);
         });
@@ -531,7 +531,7 @@ export class Intent {
      * @return {Promise}
      */
     public setAvatarUrl(url: string) {
-        var self = this;
+        const self = this;
         return self._ensureRegistered().then(function() {
             return self.client.setAvatarUrl(url);
         });
@@ -544,7 +544,7 @@ export class Intent {
      * @return {Promise}
      */
     public createAlias(alias:string, roomId: string) {
-        var self = this;
+        const self = this;
         return self._ensureRegistered().then(function() {
             return self.client.createAlias(alias, roomId);
         });
@@ -667,7 +667,7 @@ export class Intent {
     // Guard a function which returns a promise which may reject if the user is not
     // in the room. If the promise rejects, join the room and retry the function.
     private _joinGuard<T>(roomId: string, promiseFn: () => Promise<T>) {
-        var self = this;
+        const self = this;
         return function() {
             return promiseFn().catch(function(err) {
                 if (err.errcode !== "M_FORBIDDEN") {
@@ -763,10 +763,10 @@ export class Intent {
         if (this.opts.dontCheckPowerLevel && eventType !== "m.room.power_levels") {
             return Bluebird.resolve();
         }
-        var self = this;
-        var userId = this.client.credentials.userId;
-        var plContent = this.opts.backingStore.getPowerLevelContent(roomId);
-        var promise = Bluebird.resolve(plContent);
+        const self = this;
+        const userId = this.client.credentials.userId;
+        const plContent = this.opts.backingStore.getPowerLevelContent(roomId);
+        let promise = Bluebird.resolve(plContent);
         if (!plContent) {
             promise = this.client.getStateEvent(roomId, "m.room.power_levels", "");
         }
@@ -780,23 +780,23 @@ export class Intent {
                 state_key: "",
                 type: "m.room.power_levels"
             }
-            var powerLevelEvent = new MatrixEvent(event);
+            const powerLevelEvent = new MatrixEvent(event);
             // What level do we need for this event type?
-            var defaultLevel = event.content.events_default;
+            let defaultLevel = event.content.events_default;
             if (STATE_EVENT_TYPES.indexOf(eventType) !== -1) {
                 defaultLevel = event.content.state_default;
             }
-            var requiredLevel = event.content.events[eventType] || defaultLevel;
+            const requiredLevel = event.content.events[eventType] || defaultLevel;
 
             // Parse out what level the client has by abusing the JS SDK
-            var roomMember = new RoomMember(roomId, userId);
+            const roomMember = new RoomMember(roomId, userId);
             roomMember.setPowerLevelEvent(powerLevelEvent);
 
             if (requiredLevel > roomMember.powerLevel) {
                 // can the bot update our power level?
-                var bot = new RoomMember(roomId, self.botClient.credentials.userId);
+                const bot = new RoomMember(roomId, self.botClient.credentials.userId);
                 bot.setPowerLevelEvent(powerLevelEvent);
-                var levelRequiredToModifyPowerLevels = event.content.events[
+                const levelRequiredToModifyPowerLevels = event.content.events[
                     "m.room.power_levels"
                 ] || event.content.state_default;
                 if (levelRequiredToModifyPowerLevels > bot.powerLevel) {
@@ -813,7 +813,7 @@ export class Intent {
                     roomId, userId, requiredLevel, powerLevelEvent
                 ).then(function() {
                     // tweak the level for the client to reflect the new reality
-                    var userLevels = powerLevelEvent.getContent().users || {};
+                    const userLevels = powerLevelEvent.getContent().users || {};
                     userLevels[userId] = requiredLevel;
                     powerLevelEvent.getContent().users = userLevels;
                     return Bluebird.resolve(powerLevelEvent);
