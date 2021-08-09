@@ -1,5 +1,5 @@
-"use strict";
-var RequestFactory = require("../..").RequestFactory;
+const RequestFactory = require("../..").RequestFactory;
+const { expect } = require('chai');
 
 describe("RequestFactory", function() {
     var factory;
@@ -19,15 +19,15 @@ describe("RequestFactory", function() {
 
         factory.addDefaultResolveCallback(function(req, resolve) {
             if (req.getId() === r1.getId()) {
-                expect(resolve).toEqual("foobar");
+                expect(resolve).to.equal("foobar");
                 r2.resolve("flibble");
             }
             else if (req.getId() === r2.getId()) {
-                expect(resolve).toEqual("flibble");
+                expect(resolve).to.equal("flibble");
                 done();
             }
             else {
-                expect(false).toBe(true, "Unknown req ID: " + req.getId());
+                expect(false).to.equal(true, "Unknown req ID: " + req.getId());
             }
         });
         r1 = factory.newRequest();
@@ -42,15 +42,15 @@ describe("RequestFactory", function() {
 
         factory.addDefaultRejectCallback(function(req, reject) {
             if (req.getId() === r1.getId()) {
-                expect(reject).toEqual("foobar");
+                expect(reject).to.equal("foobar");
                 r2.reject("flibble");
             }
             else if (req.getId() === r2.getId()) {
-                expect(reject).toEqual("flibble");
+                expect(reject).to.equal("flibble");
                 done();
             }
             else {
-                expect(false).toBe(true, "Unknown req ID: " + req.getId());
+                expect(false).to.equal(true, "Unknown req ID: " + req.getId());
             }
         });
         r1 = factory.newRequest();
@@ -67,9 +67,9 @@ describe("RequestFactory", function() {
         }, 1500);
         factory.newRequest();
         jasmine.clock().tick(1000);
-        expect(fired).toBe(false);
+        expect(fired).to.equal(false);
         jasmine.clock().tick(500);
-        expect(fired).toBe(true);
+        expect(fired).to.equal(true);
     });
 
     it("addDefaultTimeoutCallback should not be invoked on resolved requests",
@@ -83,7 +83,7 @@ describe("RequestFactory", function() {
         jasmine.clock().tick(1000);
         r1.resolve("yup");
         jasmine.clock().tick(1000);
-        expect(fired).toBe(false);
+        expect(fired).to.equal(false);
     });
 
     it("addDefaultTimeoutCallback should not be invoked on rejected requests",
@@ -98,6 +98,6 @@ describe("RequestFactory", function() {
         jasmine.clock().tick(1000);
         r1.reject("narp");
         jasmine.clock().tick(1000);
-        expect(fired).toBe(false);
+        expect(fired).to.equal(false);
     });
 });

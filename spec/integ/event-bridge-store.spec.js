@@ -15,6 +15,7 @@ limitations under the License.
 const Datastore = require("nedb");
 const fs = require("fs");
 const log = require("../log");
+const { expect } = require('chai');
 
 const EventBridgeStore = require("../..").EventBridgeStore;
 const StoredEvent = require("../..").StoredEvent;
@@ -63,10 +64,10 @@ describe("EventBridgeStore", function() {
                 return store.getEntryByMatrixId("!room:bar", "$event:bar");
             }).then((res) => {
                 expect(res).toBeDefined();
-                expect(res.getId()).toEqual(ev.getId());
+                expect(res.getId()).to.equal(ev.getId());
                 return store.getEntryByRemoteId("remoteroom:bar", "remoteevent:bar");
             }).then((res) => {
-                expect(res.getId()).toEqual(ev.getId());
+                expect(res.getId()).to.equal(ev.getId());
                 done();
             });
         });

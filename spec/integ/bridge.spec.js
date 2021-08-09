@@ -1,7 +1,7 @@
-"use strict";
 const Datastore = require("nedb");
 const fs = require("fs");
 const log = require("../log");
+const { expect } = require('chai');
 
 const HS_URL = "http://example.com";
 const HS_DOMAIN = "example.com";
@@ -155,7 +155,7 @@ describe("Bridge", function() {
                 expect(bridgeCtrl.onUserQuery).toHaveBeenCalled();
                 var call = bridgeCtrl.onUserQuery.calls.argsFor(0);
                 var mxUser = call[0];
-                expect(mxUser.getId()).toEqual("@alice:bar");
+                expect(mxUser.getId()).to.equal("@alice:bar");
             }
         });
 
@@ -218,7 +218,7 @@ describe("Bridge", function() {
 
             const room = await bridge.getRoomStore().getMatrixRoom("!abc123:bar");
             expect(room).toBeDefined();
-            expect(room.getId()).toEqual("!abc123:bar");
+            expect(room.getId()).to.equal("!abc123:bar");
         });
 
     it("should provision the room from the returned object", async() => {
@@ -253,7 +253,7 @@ describe("Bridge", function() {
 
             const room = await bridge.getRoomStore().getMatrixRoom("!abc123:bar");
             expect(room).toBeDefined();
-            expect(room.getId()).toEqual("!abc123:bar");
+            expect(room.getId()).to.equal("!abc123:bar");
         });
 
         it("should store and link the new matrix room if a remote room was supplied", async() => {
@@ -271,8 +271,8 @@ describe("Bridge", function() {
             await appService.onAliasQuery("#foo:bar");
 
             const rooms = await bridge.getRoomStore().getLinkedRemoteRooms("!abc123:bar");
-            expect(rooms.length).toEqual(1);
-            expect(rooms[0].getId()).toEqual("__abc__");
+            expect(rooms.length).to.equal(1);
+            expect(rooms[0].getId()).to.equal("__abc__");
         });
     });
 
@@ -294,7 +294,7 @@ describe("Bridge", function() {
             const result = bridge.pingAppserviceRoute(event.room_id);
             await appService.emit("event", event);
             expect(await result).toBeLessThan(BRIDGE_PING_TIMEOUT_MS);
-            expect(sentEvent).toEqual(true);
+            expect(sentEvent).to.equal(true);
         });
         it("should time out if the ping does not respond", async () => {
             let sentEvent = false;
@@ -303,13 +303,13 @@ describe("Bridge", function() {
             bridge.botIntent._ensureHasPowerLevelFor = async () => true;
             bridge.botIntent.sendEvent = async () => {sentEvent = true};
             const result = bridge.pingAppserviceRoute("!abcdef:bar", 100);
-            expect(sentEvent).toEqual(true);
+            expect(sentEvent).to.equal(true);
             try {
                 await result;
                 throw Error("Expected to throw");
             }
             catch (ex) {
-                expect(ex.message).toEqual("Timeout waiting for ping event");
+                expect(ex.message).to.equal("Timeout waiting for ping event");
             }
         });
     });
@@ -481,9 +481,9 @@ describe("Bridge", function() {
                 var call = bridgeCtrl.onEvent.calls.argsFor(0);
                 var req = call[0];
                 var ctx = call[1];
-                expect(req.getData()).toEqual(event);
-                expect(ctx.senders.matrix.getId()).toEqual("@foo:bar");
-                expect(ctx.rooms.matrix.getId()).toEqual("!flibble:bar");
+                expect(req.getData()).to.equal(event);
+                expect(ctx.senders.matrix.getId()).to.equal("@foo:bar");
+                expect(ctx.rooms.matrix.getId()).to.equal("!flibble:bar");
                 done();
             });
         });
@@ -510,9 +510,9 @@ describe("Bridge", function() {
             var call = bridgeCtrl.onEvent.calls.argsFor(0);
             var req = call[0];
             var ctx = call[1];
-            expect(req.getData()).toEqual(event);
-            expect(ctx.senders.remote.getId()).toEqual("__alice__");
-            expect(ctx.senders.remotes.length).toEqual(1);
+            expect(req.getData()).to.equal(event);
+            expect(ctx.senders.remote.getId()).to.equal("__alice__");
+            expect(ctx.senders.remotes.length).to.equal(1);
         });
 
         it("should include remote targets in the context if applicable", async() => {
@@ -537,9 +537,9 @@ describe("Bridge", function() {
             var call = bridgeCtrl.onEvent.calls.argsFor(0);
             var req = call[0];
             var ctx = call[1];
-            expect(req.getData()).toEqual(event);
-            expect(ctx.targets.remote.getId()).toEqual("__bob__");
-            expect(ctx.targets.remotes.length).toEqual(1);
+            expect(req.getData()).to.equal(event);
+            expect(ctx.targets.remote.getId()).to.equal("__bob__");
+            expect(ctx.targets.remotes.length).to.equal(1);
         });
 
         it("should include remote rooms in the context if applicable",
@@ -567,9 +567,9 @@ describe("Bridge", function() {
                 var call = bridgeCtrl.onEvent.calls.argsFor(0);
                 var req = call[0];
                 var ctx = call[1];
-                expect(req.getData()).toEqual(event);
-                expect(ctx.rooms.remote.getId()).toEqual("roomy");
-                expect(ctx.rooms.remotes.length).toEqual(1);
+                expect(req.getData()).to.equal(event);
+                expect(ctx.rooms.remote.getId()).to.equal("roomy");
+                expect(ctx.rooms.remotes.length).to.equal(1);
                 done();
             });
         });
@@ -603,7 +603,7 @@ describe("Bridge", function() {
             var call = bridgeCtrl.onEvent.calls.argsFor(0);
             var req = call[0];
             var ctx = call[1];
-            expect(req.getData()).toEqual(event);
+            expect(req.getData()).to.equal(event);
             expect(ctx).toBeNull();
         });
     });
@@ -622,17 +622,17 @@ describe("Bridge", function() {
     describe("getters", function() {
         it("should be able to getRoomStore", async() => {
             await bridge.run(101, appService);
-            expect(bridge.getRoomStore()).toEqual(roomStore);
+            expect(bridge.getRoomStore()).to.equal(roomStore);
         });
 
         it("should be able to getUserStore", async() => {
             await bridge.run(101, appService);
-            expect(bridge.getUserStore()).toEqual(userStore);
+            expect(bridge.getUserStore()).to.equal(userStore);
         });
 
         it("should be able to getEventStore", async() => {
             await bridge.run(101, appService);
-            expect(bridge.getEventStore()).toEqual(eventStore);
+            expect(bridge.getEventStore()).to.equal(eventStore);
         });
 
         it("should be able to getRequestFactory", async() => {
@@ -666,7 +666,7 @@ describe("Bridge", function() {
             // sentinel. If the same object is returned, this will be present.
             intent._test = 42;
             var intent2 = bridge.getIntent("@foo:bar");
-            expect(intent).toEqual(intent2);
+            expect(intent).to.equal(intent2);
         });
 
         it(
@@ -677,7 +677,7 @@ describe("Bridge", function() {
             intent._test = 42;
             jasmine.clock().tick(cullTimeMs);
             var intent2 = bridge.getIntent("@foo:bar");
-            expect(intent).not.toEqual(intent2);
+            expect(intent).not.to.equal(intent2);
         });
 
         it("should not cull intents which are accessed again via getIntent", function() {
@@ -692,7 +692,7 @@ describe("Bridge", function() {
                 bridge.getIntent("@foo:bar");
             }
             var intent2 = bridge.getIntent("@foo:bar");
-            expect(intent).toEqual(intent2);
+            expect(intent).to.equal(intent2);
         });
 
         it("should keep the Intent up-to-date with incoming events", function(done) {
@@ -759,20 +759,20 @@ describe("Bridge", function() {
                 getId: function() { return "request id here"; }
             });
             expect(intent2).toBeDefined();
-            expect(intent).not.toEqual(intent2);
+            expect(intent).not.to.equal(intent2);
         });
 
         it("should return an escaped userId",
         function() {
             const intent = bridge.getIntent("@foo£$&!£:bar");
-            expect(intent.client.uid).toEqual("@foo=a3=24=26=21=a3:bar");
+            expect(intent.client.uid).to.equal("@foo=a3=24=26=21=a3:bar");
         });
 
         it("should not return an escaped userId if disabled",
         function() {
             bridge.opts.escapeUserIds = false;
             const intent = bridge.getIntent("@foo£$&!£:bar");
-            expect(intent.client.uid).toEqual("@foo£$&!£:bar");
+            expect(intent.client.uid).to.equal("@foo£$&!£:bar");
         });
     });
 
@@ -795,7 +795,7 @@ describe("Bridge", function() {
                 return bridge.getUserStore().getMatrixUser("@foo:bar");
             }).then((usr) => {
                 expect(usr).toBeDefined();
-                expect(usr.getId()).toEqual("@foo:bar");
+                expect(usr.getId()).to.equal("@foo:bar");
             });
         });
 
@@ -845,9 +845,9 @@ describe("Bridge", function() {
                 expect(botClient.register).toHaveBeenCalledWith(mxUser.localpart);
                 return bridge.getUserStore().getRemoteUsersFromMatrixId("@foo:bar");
             }).then(function(users) {
-                expect(users.length).toEqual(1);
+                expect(users.length).to.equal(1);
                 if (users.length > 0) {
-                    expect(users[0].getId()).toEqual("__remote__");
+                    expect(users[0].getId()).to.equal("__remote__");
                 }
                 done();
             });
@@ -861,7 +861,7 @@ describe("Bridge", function() {
             const errorPromise = Promise.reject(err)
             botClient.register.and.returnValue(errorPromise);
             bridge.provisionUser(mxUser, provisionedUser).catch(function(ex) {
-                expect(ex).toBe(err);
+                expect(ex).to.equal(err);
                 expect(botClient.register).toHaveBeenCalledWith(mxUser.localpart);
                 done();
             });

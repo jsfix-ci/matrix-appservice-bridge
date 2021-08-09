@@ -1,12 +1,13 @@
-const { RoomUpgradeHandler } = require("../../lib/components/room-upgrade-handler")
+const { RoomUpgradeHandler } = require("../../lib/components/room-upgrade-handler");
+const { expect } = require('chai');
 
 describe("RoomUpgradeHandler", () => {
     describe("constructor", () => {
         it("should construct", () => {
             const ruh = new RoomUpgradeHandler({isOpts: true}, {isBridge: true});
-            expect(ruh.opts).toEqual({isOpts: true, migrateGhosts: true, migrateStoreEntries: true});
-            expect(ruh.bridge).toEqual({isBridge: true});
-            expect(ruh.waitingForInvite.size).toEqual(0);
+            expect(ruh.opts).to.equal({isOpts: true, migrateGhosts: true, migrateStoreEntries: true});
+            expect(ruh.bridge).to.equal({isBridge: true});
+            expect(ruh.waitingForInvite.size).to.equal(0);
         });
     });
     describe("onTombstone", () => {
@@ -26,9 +27,9 @@ describe("RoomUpgradeHandler", () => {
                     replacement_room: "!new:def",
                 }
             }).then((res) => {
-                expect(joined).toEqual("!new:def");
-                expect(ruh.waitingForInvite.size).toEqual(0);
-                expect(res).toEqual(true);
+                expect(joined).to.equal("!new:def");
+                expect(ruh.waitingForInvite.size).to.equal(0);
+                expect(res).to.equal(true);
             });
         });
         it("should wait for an invite on M_FORBIDDEN", () => {
@@ -46,9 +47,9 @@ describe("RoomUpgradeHandler", () => {
                     replacement_room: "!new:def",
                 }
             }).then((res) => {
-                expect(joined).toEqual("!new:def");
-                expect(ruh.waitingForInvite.size).toEqual(1);
-                expect(res).toEqual(true);
+                expect(joined).to.equal("!new:def");
+                expect(ruh.waitingForInvite.size).to.equal(1);
+                expect(res).to.equal(true);
             });
         });
         it("should do nothing on failure", () => {
@@ -67,9 +68,9 @@ describe("RoomUpgradeHandler", () => {
                     replacement_room: "!new:def",
                 }
             }).then((res) => {
-                expect(joined).toEqual("!new:def");
-                expect(ruh.waitingForInvite.size).toEqual(0);
-                expect(res).toEqual(false);
+                expect(joined).to.equal("!new:def");
+                expect(ruh.waitingForInvite.size).to.equal(0);
+                expect(res).to.equal(false);
             });
         });
     });
@@ -83,8 +84,8 @@ describe("RoomUpgradeHandler", () => {
             };
             const ruh = new RoomUpgradeHandler({}, bridge);
             return ruh.joinNewRoom("!new:def", "!new:def").then((res) => {
-                expect(res).toEqual(true);
-                expect(joined).toEqual("!new:def");
+                expect(res).to.equal(true);
+                expect(joined).to.equal("!new:def");
             });
         });
         it("should return false on M_FORBIDDEN", () => {
@@ -96,8 +97,8 @@ describe("RoomUpgradeHandler", () => {
             };
             const ruh = new RoomUpgradeHandler({}, bridge);
             return ruh.joinNewRoom("!new:def").then((res) => {
-                expect(joined).toEqual("!new:def");
-                expect(res).toEqual(false);
+                expect(joined).to.equal("!new:def");
+                expect(res).to.equal(false);
             });
         });
         it("should fail for any other reason", () => {
@@ -108,7 +109,7 @@ describe("RoomUpgradeHandler", () => {
             };
             const ruh = new RoomUpgradeHandler({}, bridge);
             return ruh.joinNewRoom("!new:def", "!new:def").catch((err) => {
-                expect(err.message).toEqual("Failed to handle upgrade");
+                expect(err.message).to.equal("Failed to handle upgrade");
             });
         });
     });
@@ -117,7 +118,7 @@ describe("RoomUpgradeHandler", () => {
             const ruh = new RoomUpgradeHandler({}, {});
             expect(await ruh.onInvite({
                 room_id: "!abc:def",
-            })).toEqual(false);
+            })).to.equal(false);
         });
         it("should handle a expected invite", async (done) => {
             const ruh = new RoomUpgradeHandler({}, {});
@@ -128,12 +129,12 @@ describe("RoomUpgradeHandler", () => {
                 return Promise.resolve();
             }
             ruh.onJoinedNewRoom = () => {
-                expect(newRoomId).toEqual("!new:def");
+                expect(newRoomId).to.equal("!new:def");
                 done();
             }
             expect(await ruh.onInvite({
                 room_id: "!new:def",
-            })).toEqual(true);
+            })).to.equal(true);
         });
     });
 });

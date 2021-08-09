@@ -1,12 +1,13 @@
 "use strict";
-var Datastore = require("nedb");
-var fs = require("fs");
-var log = require("../log");
+const Datastore = require("nedb");
+const fs = require("fs");
+const log = require("../log");
+const { expect } = require('chai');
 
-var UserBridgeStore = require("../..").UserBridgeStore;
-var MatrixUser = require("../..").MatrixUser;
-var RemoteUser = require("../..").RemoteUser;
-var TEST_DB_PATH = __dirname + "/test.db";
+const UserBridgeStore = require("../..").UserBridgeStore;
+const MatrixUser = require("../..").MatrixUser;
+const RemoteUser = require("../..").RemoteUser;
+const TEST_DB_PATH = __dirname + "/test.db";
 
 describe("UserBridgeStore", function() {
     var store, db;
@@ -47,8 +48,8 @@ describe("UserBridgeStore", function() {
             const userFromStore = await store.setMatrixUser(user).then(function() {
                 return store.getMatrixUser(userId);
             });
-            expect(userFromStore.getId()).toEqual(userId);
-            expect(userFromStore.getDisplayName()).toEqual("Foo");
+            expect(userFromStore.getId()).to.equal(userId);
+            expect(userFromStore.getDisplayName()).to.equal("Foo");
         });
     });
 
@@ -60,7 +61,7 @@ describe("UserBridgeStore", function() {
             const userFromStore = await store.setRemoteUser(user).then(function() {
                 return store.getRemoteUser(remoteId);
             });
-            expect(userFromStore.getId()).toEqual(remoteId);
+            expect(userFromStore.getId()).to.equal(remoteId);
         });
 
         it("should fully persist all types of primitive data", async function() {
@@ -78,11 +79,11 @@ describe("UserBridgeStore", function() {
             const userFromStore = await store.setRemoteUser(user).then(function() {
                 return store.getRemoteUser(remoteId);
             });
-            expect(userFromStore.getId()).toEqual(remoteId);
-            expect(userFromStore.get("int")).toEqual(42);
-            expect(userFromStore.get("str")).toEqual("the answer");
-            expect(userFromStore.get("bool")).toEqual(true);
-            expect(userFromStore.get("obj")).toEqual({
+            expect(userFromStore.getId()).to.equal(remoteId);
+            expect(userFromStore.get("int")).to.equal(42);
+            expect(userFromStore.get("str")).to.equal("the answer");
+            expect(userFromStore.get("bool")).to.equal(true);
+            expect(userFromStore.get("obj")).to.equal({
                 foo: "bar",
                 baz: {
                     buzz: true
@@ -99,7 +100,7 @@ describe("UserBridgeStore", function() {
             const userFromStore = await store.setRemoteUser(user).then(function() {
                 return store.getRemoteUser(remoteId);
             });
-            expect(userFromStore.getId()).toEqual(remoteId);
+            expect(userFromStore.getId()).to.equal(remoteId);
             expect(userFromStore.get("fn")).toBeUndefined();
         });
     });
@@ -123,24 +124,24 @@ describe("UserBridgeStore", function() {
             const users = await store.getByRemoteData({
                 topLevel: 7
             });
-            expect(users.length).toEqual(1);
+            expect(users.length).to.equal(1);
             const u = users[0];
             if (!u) {
                 return;
             }
-            expect(u.getId()).toEqual(remoteId);
+            expect(u.getId()).to.equal(remoteId);
         });
 
         it("should be able to retrieve via nested keys", async function() {
             const users = await store.getByRemoteData({
                 "nested.baz.buzz": true
             });
-            expect(users.length).toEqual(1);
+            expect(users.length).to.equal(1);
             const u = users[0];
             if (!u) {
                 return;
             }
-            expect(u.getId()).toEqual(remoteId);
+            expect(u.getId()).to.equal(remoteId);
         });
 
         it("should be able to use basic NoSQL $commands", async function() {
@@ -149,18 +150,18 @@ describe("UserBridgeStore", function() {
                     $gt: 3 // greater than 3
                 }
             });
-            expect(users.length).toEqual(1);
+            expect(users.length).to.equal(1);
             const u = users[0];
             if (!u) {
                 return;
             }
-            expect(u.getId()).toEqual(remoteId);
+            expect(u.getId()).to.equal(remoteId);
         });
 
         it("should throw if the data query isn't an object", function() {
             expect(function() {
                 store.getByRemoteData("nested.key");
-            }).toThrow();
+            }).to.throw();
         });
     });
 
@@ -172,7 +173,7 @@ describe("UserBridgeStore", function() {
             const results = await store.linkUsers(mx, jng).then(function() {
                 return store.getMatrixUsersFromRemoteId("remote.id");
             });
-            expect(results.length).toEqual(1);
+            expect(results.length).to.equal(1);
         });
     });
 
@@ -185,7 +186,7 @@ describe("UserBridgeStore", function() {
                 return store.unlinkUsers(mx, jng);
             });
             const results = await store.getMatrixUsersFromRemoteId("remote.id");
-            expect(results.length).toEqual(0);
+            expect(results.length).to.equal(0);
         });
 
         it("should no-op if the link doesn't exist", async function() {
@@ -193,7 +194,7 @@ describe("UserBridgeStore", function() {
             var jng = new RemoteUser("remote.id");
             await store.unlinkUsers(mx, jng);
             const results = await store.getMatrixUsersFromRemoteId("remote.id");
-            expect(results.length).toEqual(0);
+            expect(results.length).to.equal(0);
         });
     });
 
@@ -203,7 +204,7 @@ describe("UserBridgeStore", function() {
             const mx = new MatrixUser("@foo:bar");
             await store.setMatrixUser(mx);
             const m = await store.getByMatrixLocalpart("foo");
-            expect(m.getId()).toEqual("@foo:bar");
+            expect(m.getId()).to.equal("@foo:bar");
         });
     });
 
@@ -241,31 +242,31 @@ describe("UserBridgeStore", function() {
 
         it("should return an empty array if there are no matches", async function() {
             const res = await store.getMatrixUsersFromRemoteId("nothing");
-            expect(res.length).toEqual(0);
+            expect(res.length).to.equal(0);
         });
 
         it("should return a list of users for multiple matches", async function() {
             const res = await store.getMatrixUsersFromRemoteId("b_1");
-            expect(res.length).toEqual(3);
+            expect(res.length).to.equal(3);
             res.forEach(function(usr) {
                 expect(
                     ["@b:bar", "@bb:bar", "@bbb:bar"].indexOf(usr.getId())
-                ).not.toEqual(-1);
+                ).not.to.equal(-1);
             })
         });
 
         it("should return a single element list for a single match", async function() {
             const res = await store.getMatrixUsersFromRemoteId("a_1");
-            expect(res.length).toEqual(1);
-            expect(res[0].getId()).toEqual("@a:bar");
+            expect(res.length).to.equal(1);
+            expect(res[0].getId()).to.equal("@a:bar");
         });
 
         describe("getMatrixLinks", function() {
             it("should return a single element list for a single match",
             async function() {
                 const res = await store.getMatrixLinks("a_1");
-                expect(res.length).toEqual(1);
-                expect(res[0]).toEqual("@a:bar");
+                expect(res.length).to.equal(1);
+                expect(res[0]).to.equal("@a:bar");
             });
         });
     });
@@ -295,32 +296,32 @@ describe("UserBridgeStore", function() {
 
         it("should return an empty array if there are no matches", async function() {
             const res = await store.getRemoteUsersFromMatrixId("nothing");
-            expect(res.length).toEqual(0);
+            expect(res.length).to.equal(0);
             
         });
 
         it("should return a list of users for multiple matches", async function() {
             const res = await store.getRemoteUsersFromMatrixId("@a:bar");
-            expect(res.length).toEqual(3);
+            expect(res.length).to.equal(3);
             res.forEach(function(usr) {
                 expect(
                     ["a_1", "a_2", "a_3"].indexOf(usr.getId())
-                ).not.toEqual(-1);
+                ).not.to.equal(-1);
             })
         });
 
         it("should return a single element list for a single match", async function() {
             const res = await store.getRemoteUsersFromMatrixId("@b:bar");
-            expect(res.length).toEqual(1);
-            expect(res[0].getId()).toEqual("b_1");
+            expect(res.length).to.equal(1);
+            expect(res[0].getId()).to.equal("b_1");
         });
 
         describe("getRemoteLinks", function() {
             it("should return a single element list for a single match",
             async function() {
                 const res = await store.getRemoteLinks("@b:bar");
-                expect(res.length).toEqual(1);
-                expect(res[0]).toEqual("b_1");
+                expect(res.length).to.equal(1);
+                expect(res[0]).to.equal("b_1");
             });
         });
     });

@@ -1,7 +1,7 @@
-"use strict";
 const Datastore = require("nedb");
 const fs = require("fs");
 const log = require("../log");
+const { expect } = require('chai');
 
 const RoomBridgeStore = require("../..").RoomBridgeStore;
 const MatrixRoom = require("../..").MatrixRoom;
@@ -48,9 +48,9 @@ describe("RoomBridgeStore", function () {
                 };
                 await store.upsertEntry(entry);
                 const e = await store.getEntryById("flibble");
-                expect(e.id).toEqual(entry.id);
-                expect(e.matrix.getId()).toEqual("!foo:bar");
-                expect(e.remote.getId()).toEqual("#flibble");
+                expect(e.id).to.equal(entry.id);
+                expect(e.matrix.getId()).to.equal("!foo:bar");
+                expect(e.remote.getId()).to.equal("#flibble");
             });
 
         it("should update an entry if one with the same 'id' exists", async function () {
@@ -67,9 +67,9 @@ describe("RoomBridgeStore", function () {
             };
             await store.upsertEntry(entry2);
             const e = await store.getEntryById("flibble");
-            expect(e.id).toEqual("flibble");
-            expect(e.matrix.getId()).toEqual("!woo:bar");
-            expect(e.remote.getId()).toEqual("#wibble");
+            expect(e.id).to.equal("flibble");
+            expect(e.matrix.getId()).to.equal("!woo:bar");
+            expect(e.remote.getId()).to.equal("#wibble");
         });
     });
 
@@ -105,12 +105,12 @@ describe("RoomBridgeStore", function () {
                 done();
                 return;
             }
-            expect(e.length).toEqual(1);
+            expect(e.length).to.equal(1);
             if (!e[0]) {
                 done();
                 return;
             }
-            expect(e[0].remote.getId()).toEqual("#foo");
+            expect(e[0].remote.getId()).to.equal("#foo");
         });
     });
 
@@ -132,12 +132,12 @@ describe("RoomBridgeStore", function () {
                 done();
                 return;
             }
-            expect(e.length).toEqual(1);
+            expect(e.length).to.equal(1);
             if (!e[0]) {
                 done();
                 return;
             }
-            expect(e[0].matrix.getId()).toEqual("!nothing:here");
+            expect(e[0].matrix.getId()).to.equal("!nothing:here");
         });
     });
 
@@ -201,13 +201,13 @@ describe("RoomBridgeStore", function () {
             };
             await store.linkRooms(entry.matrix, entry.remote, entry.data);
             const e = await store.getEntriesByLinkData({ foo: "bar" });
-            expect(e.length).toEqual(1);
+            expect(e.length).to.equal(1);
             await store.removeEntriesByLinkData({
                 foo: "bar"
             });
             const res = await store.getEntriesByLinkData({ foo: "bar" });
 
-            expect(res.length).toEqual(0);
+            expect(res.length).to.equal(0);
         });
     });
 
@@ -225,9 +225,9 @@ describe("RoomBridgeStore", function () {
                 [store.upsertEntry(entry), store.upsertEntry(entry2)]
             );
             const results = await store.getEntriesByMatrixId("!foo:bar");
-            expect(results.length).toEqual(2);
+            expect(results.length).to.equal(2);
             const remoteIds = results.map((res) => res.remote.getId());
-            expect(remoteIds.sort()).toEqual(["#bar", "#foo"]);
+            expect(remoteIds.sort()).to.equal(["#bar", "#foo"]);
         });
     });
 
@@ -259,10 +259,10 @@ describe("RoomBridgeStore", function () {
                 entries.map((e) => store.upsertEntry(e))
             );
             const results = await store.getEntriesByMatrixIds(["!foo:bar", "!fizz:buzz"]);
-            expect(results["!foo:bar"].length).toEqual(2);
-            expect(results["!fizz:buzz"].length).toEqual(1);
-            expect(results["!fizz:buzz"][0].remote.getId()).toEqual("#fizz");
-            expect(results["!foo:bar"].map((e) => e.remote.getId()).sort()).toEqual(["#bar", "#foo"]);
+            expect(results["!foo:bar"].length).to.equal(2);
+            expect(results["!fizz:buzz"].length).to.equal(1);
+            expect(results["!fizz:buzz"][0].remote.getId()).to.equal("#fizz");
+            expect(results["!foo:bar"].map((e) => e.remote.getId()).sort()).to.equal(["#bar", "#foo"]);
         });
     });
 
@@ -280,8 +280,8 @@ describe("RoomBridgeStore", function () {
                 [store.upsertEntry(entry), store.upsertEntry(entry2)]
             );
             const results = await store.getEntriesByRemoteId("#foo");
-            expect(results.length).toEqual(1);
-            expect(results[0].matrix.getId()).toEqual("!foo:bar");
+            expect(results.length).to.equal(1);
+            expect(results[0].matrix.getId()).to.equal("!foo:bar");
         });
     });
 
@@ -296,12 +296,12 @@ describe("RoomBridgeStore", function () {
                 "_custom_id"
             );
             const entry = await store.getEntryById("_custom_id");
-            expect(entry.id).toEqual("_custom_id");
-            expect(entry.remote.getId()).toEqual("#foo");
-            expect(entry.remote.get("remotekey")).toEqual({ nested: "remote_val" });
-            expect(entry.matrix.getId()).toEqual("!foo:bar");
-            expect(entry.matrix.get("mxkey")).toEqual("mxval");
-            expect(entry.data).toEqual({ some: "data_goes_here" });
+            expect(entry.id).to.equal("_custom_id");
+            expect(entry.remote.getId()).to.equal("#foo");
+            expect(entry.remote.get("remotekey")).to.equal({ nested: "remote_val" });
+            expect(entry.matrix.getId()).to.equal("!foo:bar");
+            expect(entry.matrix.get("mxkey")).to.equal("mxval");
+            expect(entry.data).to.equal({ some: "data_goes_here" });
         });
     });
 });

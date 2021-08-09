@@ -1,4 +1,5 @@
 const MatrixUser = require("../..").MatrixUser;
+const { expect } = require('chai');
 
 describe("MatrixUser", function() {
     describe("escapeUserId", function() {
@@ -11,7 +12,7 @@ describe("MatrixUser", function() {
             ].forEach((user) => {
                 const userId = user.getId();
                 user.escapeUserId();
-                expect(user.getId()).toBe(userId);
+                expect(user.getId()).to.equal(userId);
             })
         });
         it("should escape unacceptable user ids", function() {
@@ -32,16 +33,16 @@ describe("MatrixUser", function() {
                 new MatrixUser("@[doggo]:localhost", null, false)
             ].forEach((user, i) => {
                 user.escapeUserId();
-                expect(user.getId()).toBe(expected[i]);
+                expect(user.getId()).to.equal(expected[i]);
             })
         });
         it("should not escape if ESCAPE_DEFAULT is false", function() {
             MatrixUser.ESCAPE_DEFAULT = false;
-            expect(new MatrixUser("@$:localhost", null).getId()).toBe("@$:localhost");
+            expect(new MatrixUser("@$:localhost", null).getId()).to.equal("@$:localhost");
         });
         it("should escape if ESCAPE_DEFAULT is true", function() {
             MatrixUser.ESCAPE_DEFAULT = true;
-            expect(new MatrixUser("@$:localhost", null).getId()).toBe("@=24:localhost");
+            expect(new MatrixUser("@$:localhost", null).getId()).to.equal("@=24:localhost");
         });
     });
 });

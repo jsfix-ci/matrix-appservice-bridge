@@ -1,7 +1,7 @@
-"use strict";
 const log = require("../log");
 const StateLookup = require("../..").StateLookup;
 const promiseutil = require("../../lib/utils/promiseutil");
+const { expect } = require('chai');
 
 describe("StateLookup", function() {
     var lookup, cli;
@@ -24,9 +24,9 @@ describe("StateLookup", function() {
             var statePromise = createStatePromise([]);
             cli.roomState.and.returnValue(statePromise.promise);
             var p = lookup.trackRoom("!foo:bar");
-            expect(statePromise.isPending).toBe(true); // not resolved HTTP call yet
+            expect(statePromise.isPending).to.equal(true); // not resolved HTTP call yet
             await promiseutil.delay(5);
-            expect(statePromise.isPending).toBe(true); // still not resolved HTTP call
+            expect(statePromise.isPending).to.equal(true); // still not resolved HTTP call
             statePromise.resolve();
             await p; // Should resolve now HTTP call is resolved
         });
@@ -37,7 +37,7 @@ describe("StateLookup", function() {
             cli.roomState.and.returnValue(statePromise.promise);
             const p = lookup.trackRoom("!foo:bar");
             const q = lookup.trackRoom("!foo:bar");
-            expect(p).toBe(q);
+            expect(p).to.equal(q);
         });
 
         it("should be able to have >1 in-flight track requests at once", async() => {
@@ -56,7 +56,7 @@ describe("StateLookup", function() {
             const promiseB = lookup.trackRoom("!b:foobar");
             stateA.resolve();
             await promiseA;
-            expect(stateB.isPending).toBe(true);
+            expect(stateB.isPending).to.equal(true);
             stateB.resolve();
             await promiseB;
         });
@@ -73,7 +73,7 @@ describe("StateLookup", function() {
             })
 
             await lookup.trackRoom("!foo:bar");
-            expect(count).toBe(3);
+            expect(count).to.equal(3);
         });
 
         it("should fail the promise if the HTTP call returns 4xx", function(done) {
@@ -84,7 +84,7 @@ describe("StateLookup", function() {
             });
 
             lookup.trackRoom("!foo:bar").catch(function(err) {
-                expect(err.httpStatus).toBe(403);
+                expect(err.httpStatus).to.equal(403);
                 done();
             });
         });
@@ -97,7 +97,7 @@ describe("StateLookup", function() {
             });
 
             lookup.trackRoom("!foo:bar").catch(function(err) {
-                expect(err.httpStatus).toBe(500);
+                expect(err.httpStatus).to.equal(500);
                 done();
             });
         });
@@ -117,14 +117,14 @@ describe("StateLookup", function() {
             await lookup.trackRoom("!foo:bar")
             expect(
                 lookup.getState("!foo:bar", "m.room.name", "").content.name
-            ).toEqual("Foo");
+            ).to.equal("Foo");
             lookup.onEvent(
                 {type: "m.room.name", state_key: "", room_id: "!foo:bar",
                     content: { name: "Bar" }}
             );
             expect(
                 lookup.getState("!foo:bar", "m.room.name", "").content.name
-            ).toEqual("Bar");
+            ).to.equal("Bar");
         });
 
         it("should clobber events from in-flight track requests", async() => {
@@ -134,7 +134,7 @@ describe("StateLookup", function() {
             ]);
             cli.roomState.and.returnValue(statePromise.promise);
             var p = lookup.trackRoom("!foo:bar");
-            expect(statePromise.isPending).toBe(true); // not resolved HTTP call yet
+            expect(statePromise.isPending).to.equal(true); // not resolved HTTP call yet
             // this event should clobber response from HTTP call
             statePromise.resolve();
             await lookup.onEvent(
@@ -144,7 +144,7 @@ describe("StateLookup", function() {
             await p;
             expect(
                 lookup.getState("!foo:bar", "m.room.name", "").content.name
-            ).toEqual("Bar");
+            ).to.equal("Bar");
         });
     });
 
@@ -169,21 +169,21 @@ describe("StateLookup", function() {
         });
 
         it("should return null for no match with state_key", function() {
-            expect(lookup.getState("!foo:bar", "m.room.colour", "")).toBe(null);
+            expect(lookup.getState("!foo:bar", "m.room.colour", "")).to.equal(null);
         });
 
         it("should return a 0-length array for no match without state_key", function() {
-            expect(lookup.getState("!foo:bar", "m.room.colour")).toEqual([]);
+            expect(lookup.getState("!foo:bar", "m.room.colour")).to.equal([]);
         });
 
         it("should return the event for a match with state_key", function() {
-            expect(lookup.getState("!foo:bar", "m.room.name", "")).toEqual(
+            expect(lookup.getState("!foo:bar", "m.room.name", "")).to.equal(
                 {type: "m.room.name", state_key: "", content: { name: "Foo" }}
             );
         });
 
         it("should return a list of events for matches without state_key", function() {
-            expect(lookup.getState("!foo:bar", "m.room.member").sort()).toEqual([
+            expect(lookup.getState("!foo:bar", "m.room.member").sort()).to.equal([
                 {type: "m.room.member", state_key: "@alice:bar", content: {
                     displayname: "Alice",
                     membership: "join"

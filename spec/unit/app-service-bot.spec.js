@@ -1,6 +1,6 @@
-"use strict";
-var AppServiceBot = require("../..").AppServiceBot;
-var log = require("../log");
+const AppServiceBot = require("../..").AppServiceBot;
+const log = require("../log");
+const { expect } = require('chai');
 
 describe("AppServiceBot", function() {
     var bot, client, reg;
@@ -29,7 +29,7 @@ describe("AppServiceBot", function() {
 
     describe("getMemberLists", function() {
         it("should fail", function() {
-            expect(() => { bot.getMemberLists(); }).toThrow();
+            expect(() => { bot.getMemberLists(); }).to.throw();
         });
     });
 });

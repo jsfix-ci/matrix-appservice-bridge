@@ -1,4 +1,5 @@
-var Request = require("../..").Request;
+const Request = require("../..").Request;
+const { expect } = require('chai');
 
 describe("Request", function() {
     var req;
@@ -7,14 +8,14 @@ describe("Request", function() {
         req = new Request({
             data: "foobar"
         });
-        expect(req.getData()).toEqual("foobar");
+        expect(req.getData()).to.equal("foobar");
     });
 
     it("getId should return the ID set in the constructor", function() {
         req = new Request({
             id: "abc123"
         });
-        expect(req.getId()).toEqual("abc123");
+        expect(req.getId()).to.equal("abc123");
     });
 
     it("getId should generate an ID if one is not supplied in the constructor",
@@ -36,7 +37,7 @@ describe("Request", function() {
     it("resolve should resolve the promise in getPromise", function(done) {
         req = new Request();
         req.getPromise().then(function(thing) {
-            expect(thing).toEqual("flibble");
+            expect(thing).to.equal("flibble");
             done();
         })
         req.resolve("flibble");
@@ -45,7 +46,7 @@ describe("Request", function() {
     it("reject should reject the promise in getPromise", function(done) {
         req = new Request();
         req.getPromise().catch(function(thing) {
-            expect(thing).toEqual("flibble");
+            expect(thing).to.equal("flibble");
             done();
         })
         req.reject("flibble");

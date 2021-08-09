@@ -1,5 +1,4 @@
-"use strict";
-var ClientFactory = require("../..").ClientFactory;
+const ClientFactory = require("../..").ClientFactory;
 
 describe("ClientFactory", function() {
     var factory, req;
@@ -31,15 +30,15 @@ describe("ClientFactory", function() {
         it("should return the same client instance for the same user ID", function() {
             var cli = factory.getClientAs("@foo:bar");
             expect(cli).toBeDefined();
-            expect(factory.getClientAs("@foo:bar")).toEqual(cli);
+            expect(factory.getClientAs("@foo:bar")).to.equal(cli);
         });
 
         it("should return the same client instance for the same user ID and request",
         function() {
             var cli = factory.getClientAs("@foo:bar", req);
             expect(cli).toBeDefined();
-            expect(factory.getClientAs("@foo:bar", req)).toEqual(cli);
-            expect(factory.getClientAs("@foo:bar")).not.toEqual(cli);
+            expect(factory.getClientAs("@foo:bar", req)).to.equal(cli);
+            expect(factory.getClientAs("@foo:bar")).not.to.equal(cli);
         });
 
         it("should return a new client instance after the request is fulfilled",
@@ -49,7 +48,7 @@ describe("ClientFactory", function() {
             req._fins.forEach(function(fn) {
                 fn();
             });
-            expect(factory.getClientAs("@foo:bar", req)).not.toEqual(cli);
+            expect(factory.getClientAs("@foo:bar", req)).not.to.equal(cli);
         });
     });
 });

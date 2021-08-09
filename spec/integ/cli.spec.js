@@ -4,6 +4,7 @@ const { Cli } = require("../..");
 const { Logging } = require("../..");
 const path = require('path');
 const { defer } = require("../../lib/utils/promiseutil");
+const { expect } = require('chai');
 Logging.configure();
 
 let tempDir;
@@ -54,7 +55,7 @@ describe("Cli", () => {
             run: (...args) => { runCalledWith = args; }
         });
         cli.run();
-        expect(runCalledWith[0]).toEqual(null);
+        expect(runCalledWith[0]).to.equal(null);
     });
 
     it("should be able to start the bridge with a custom port", async () => {
@@ -66,7 +67,7 @@ describe("Cli", () => {
             run: (...args) => { runCalledWith = args; }
         });
         cli.run({port});
-        expect(runCalledWith[0]).toEqual(port);
+        expect(runCalledWith[0]).to.equal(port);
     });
 
     it("should be able to start the bridge with a registration file and config file", async () => {
@@ -80,9 +81,9 @@ describe("Cli", () => {
             run: (...args) => { runCalledWith = args; }
         });
         cli.run({config: configFile});
-        expect(runCalledWith[0]).toEqual(null);
-        expect(runCalledWith[1]).toEqual(configData);
-        expect(runCalledWith[2].getOutput()).toEqual(registrationFileContent);
+        expect(runCalledWith[0]).to.equal(null);
+        expect(runCalledWith[1]).to.equal(configData);
+        expect(runCalledWith[2].getOutput()).to.equal(registrationFileContent);
     });
 
     it("should reload config on SIGHUP", async () => {
@@ -100,6 +101,6 @@ describe("Cli", () => {
         await writeConfigFile(newConfigData);
         // Send ourselves a signal
         process.kill(process.pid, "SIGHUP");
-        expect(await configDefer.promise).toEqual(newConfigData);
+        expect(await configDefer.promise).to.equal(newConfigData);
     });
 })

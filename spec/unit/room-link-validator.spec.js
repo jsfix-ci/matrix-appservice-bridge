@@ -1,6 +1,7 @@
 const RVL = require("../../lib/components/room-link-validator")
 const RoomLinkValidator = RVL.RoomLinkValidator;
 const Statuses = RVL.RoomLinkValidatorStatus;
+const { expect } = require('chai');
 
 const AsBotMock = {
     cachedCalled: false,
@@ -64,7 +65,7 @@ describe("RoomLinkValidator", function() {
             const validator = new RoomLinkValidator({
                 rules: { }
             }, AsBotMock, () => {});
-            expect(validator.rules).toEqual({userIds:{
+            expect(validator.rules).to.equal({userIds:{
                 conflict: [],
                 exempt: [],
             }});
@@ -74,7 +75,7 @@ describe("RoomLinkValidator", function() {
             expect(() => {
                 new RoomLinkValidator({
                 }, AsBotMock, () => {});
-            }).toThrowError("Either config.ruleFile or config.rules must be set");
+            }).to.throwError("Either config.ruleFile or config.rules must be set");
         });
         /* eslint-enable no-new */
     });
@@ -94,7 +95,7 @@ describe("RoomLinkValidator", function() {
                     }
                 }
             }, AsBotMock, () => {});
-            expect(validator.rules).toEqual({userIds:{
+            expect(validator.rules).to.equal({userIds:{
                 conflict: [
                     /@bad-bridge:localhost/,
                     /@bad-.+:localhost/
@@ -127,30 +128,30 @@ describe("RoomLinkValidator", function() {
         });
         it("should pass an empty room", function() {
             return validator.validateRoom("!empty:localhost").then((status) => {
-                expect(status).toBe(Statuses.PASSED);
+                expect(status).to.equal(Statuses.PASSED);
             })
         });
         it("should pass a room that doesn't conflict", function() {
             return validator.validateRoom("!noconflict:localhost").then((status) => {
-                expect(status).toBe(Statuses.PASSED);
+                expect(status).to.equal(Statuses.PASSED);
             })
         });
         it("should pass a room that conflicts but has exemptions", function() {
             return validator.validateRoom("!conflictexempt:localhost").then((status) => {
-                expect(status).toBe(Statuses.PASSED);
+                expect(status).to.equal(Statuses.PASSED);
             })
         });
         it("should reject a room that conflicts", function() {
             return validator.validateRoom("!conflicts:localhost").catch((status) => {
-                expect(status).toBe(Statuses.ERROR_USER_CONFLICT);
+                expect(status).to.equal(Statuses.ERROR_USER_CONFLICT);
             })
         });
         it("should continue to reject a room when it's cached", function() {
             return validator.validateRoom("!cached:localhost").catch((status) => {
-                expect(status).toBe(Statuses.ERROR_USER_CONFLICT);
+                expect(status).to.equal(Statuses.ERROR_USER_CONFLICT);
                 return validator.validateRoom("!cached:localhost");
             }).catch((status) => {
-                expect(status).toBe(Statuses.ERROR_CACHED);
+                expect(status).to.equal(Statuses.ERROR_CACHED);
             });
         });
     });

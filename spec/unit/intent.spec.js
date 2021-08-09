@@ -1,5 +1,6 @@
 const { Intent } = require("../..");
 const log = require("../log");
+const { expect } = require('chai');
 
 describe("Intent", function() {
     let intent, client, botClient;
@@ -35,7 +36,7 @@ describe("Intent", function() {
                 expect(client.joinRoom).toHaveBeenCalledWith(
                     roomId, { syncRoom: false }
                 );
-                expect(resultRoomId).toBe(roomId);
+                expect(resultRoomId).to.equal(roomId);
             });
         });
 
@@ -50,7 +51,7 @@ describe("Intent", function() {
                 }
             });
             return intent.join(roomId).then(function(resultRoomId) {
-                expect(resultRoomId).toBe(roomId);
+                expect(resultRoomId).to.equal(roomId);
                 expect(client.joinRoom).not.toHaveBeenCalled();
             });
         });
@@ -85,7 +86,7 @@ describe("Intent", function() {
                         roomId, { syncRoom: false }
                     );
                     expect(botClient.invite).toHaveBeenCalledWith(roomId, userId);
-                    expect(resultRoomId).toBe(roomId);
+                    expect(resultRoomId).to.equal(roomId);
                 });
             });
 
@@ -120,7 +121,7 @@ describe("Intent", function() {
                         expect(botClient.joinRoom).toHaveBeenCalledWith(
                             roomId, { syncRoom: false }
                         );
-                        expect(resultRoomId).toBe(roomId);
+                        expect(resultRoomId).to.equal(roomId);
 
                     });
                 });
@@ -334,7 +335,7 @@ describe("Intent", function() {
                     roomId, "m.room.message", content
                 );
                 expect(client.joinRoom).toHaveBeenCalledWith(roomId, { syncRoom: false });
-                expect(eventId).toEqual({event_id: "$12345:6789"});
+                expect(eventId).to.equal({event_id: "$12345:6789"});
             });
         });
 

@@ -1,6 +1,5 @@
-"use strict";
 const log = require("../log");
-
+const { expect } = require('chai');
 const EventQueue = require("../../lib/components/event-queue").EventQueue;
 
 
@@ -86,14 +85,14 @@ describe("EventQueue", function() {
     // Those two tests are not required if the type signature of `create` is respected.
     it("should not create queue if no type was given", function() {
         const creation = () => EventQueue.create({}, (err, data) => {});
-        expect(creation).toThrowError();
+        expect(creation).to.throwError();
     });
 
     it("should not create queue for an invalid type string", function() {
         const creation = (() =>
             EventQueue.create({type: "novalidtype"}, (err, data) => {})
         );
-        expect(creation).toThrowError();
+        expect(creation).to.throwError();
     });
 
 
@@ -103,7 +102,7 @@ describe("EventQueue", function() {
         });
 
         it("should have the proper type", function() {
-            expect(queue.type).toEqual("none");
+            expect(queue.type).to.equal("none");
         });
 
         it("should allow consume on an empty queue", function() {
@@ -142,7 +141,7 @@ describe("EventQueue", function() {
         });
 
         it("should have the proper type", function() {
-            expect(queue.type).toEqual("per_room");
+            expect(queue.type).to.equal("per_room");
         });
 
         it("should allow consume on an empty queue", function() {
@@ -176,7 +175,7 @@ describe("EventQueue", function() {
         });
 
         it("should have the proper type", function() {
-            expect(queue.type).toEqual("single");
+            expect(queue.type).to.equal("single");
         });
 
         it("should allow consume on an empty queue", function() {

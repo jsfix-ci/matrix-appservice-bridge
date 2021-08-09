@@ -1,6 +1,6 @@
-"use strict";
 const { ConfigValidator } = require("../..");
-var log = require("../log");
+const { expect } = require('chai');
+const log = require("../log");
 
 describe("ConfigValidator", function() {
     var validator;
@@ -32,7 +32,7 @@ describe("ConfigValidator", function() {
             }
         };
         var output = validator.validate(input);
-        expect(input).toEqual(output);
+        expect(input).to.equal(output);
     });
 
     it("should combine with a default config", function() {
@@ -49,7 +49,7 @@ describe("ConfigValidator", function() {
             }
         };
         var output = validator.validate(input, defaults);
-        expect(output).toEqual({
+        expect(output).to.equal({
             flibble: "wibble",
             foo: {
                 bar: 42,
@@ -58,7 +58,7 @@ describe("ConfigValidator", function() {
             }
         });
         // Ensure defaults isn't modified
-        expect(defaults).toEqual({
+        expect(defaults).to.equal({
             flibble: "wibble",
             foo: {
                 baz: 100
@@ -74,6 +74,6 @@ describe("ConfigValidator", function() {
         };
         expect(function() {
             validator.validate(input);
-        }).toThrow();
+        }).to.throw();
     });
 });
