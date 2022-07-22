@@ -1,3 +1,4 @@
+import { convert } from 'color-convert';
 /*
 Copyright 2020 The Matrix.org Foundation C.I.C.
 
@@ -103,7 +104,7 @@ class Logging {
             const level = info.level.toUpperCase() as LogLevel;
             const levelColour = CHALK_LEVELS[info.level as LogLevel];
             if (levelColour) {
-                info.level = chalk.keyword(levelColour)(level);
+                info.level = chalk.rgb(...convert.keyword.rgb(levelColour))(level);
             }
             return info;
         })
